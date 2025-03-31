@@ -10,5 +10,5 @@ Artifacts are automatic deleted after a period of time.
 
 [last published package](https://github.com/users/Phil-NHS/packages/nuget/package/TELBlazorComponentLibrary.GitPageBlazorWasm)
 [code repo for blazor wasm](https://github.com/TechnologyEnhancedLearning/GitPageBlazorWASM)
-
+https://technologyenhancedlearning.github.io/GitPageBlazorWASM/
 **TODO:** github page for main and this proj

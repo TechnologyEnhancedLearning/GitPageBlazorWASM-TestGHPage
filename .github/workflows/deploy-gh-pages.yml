@@ -57,7 +57,7 @@ jobs:
       - name: debug
         run: |
           ls
-          ls -la artifact_contents/
+
           
       - name: unzip and move artifact
         run: |  

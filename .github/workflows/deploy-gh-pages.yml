@@ -61,7 +61,6 @@ jobs:
           
       - name: unzip and move artifact
         run: |  
-          -o artifact.zip "$ARTIFACT_URL"
           unzip artifact.zip -d artifact_contents
           
           # Move the extracted artifact to the docs directory

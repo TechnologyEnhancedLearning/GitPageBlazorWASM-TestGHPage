@@ -1,0 +1,108 @@
+name: Deploy to GitHub Pages
+
+on:
+  #push:
+  #  branches: [ master ] 
+  workflow_run:
+    workflows: ["Build BCL Package"] # Name of the workflow to trigger from.
+    types:
+      - completed
+
+permissions:
+  contents: write
+env:
+  
+  BCL_Source: "https://nuget.pkg.github.com/phil-nhs/index.json"
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  PACKAGES_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
+  GITHUB_USERNAME: "Phil-NHS"
+  IS_LOCAL_DEV: false
+  USE_BCL_PROJECT_REFERENCE: false
+  
+jobs:
+
+  get-bcl-version:
+    runs-on: ubuntu-latest
+    outputs:
+      bcl-version: ${{ steps.get-bcl-version-from-git-packages.outputs.latest-bcl-version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+          
+    
+      - name: Get BCL Version from Git Packages
+        id: get-bcl-version-from-git-packages
+        run: |
+          TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          OWNER="Phil-NHS"
+          PACKAGE_NAME="TELBlazorComponentLibrary.GitPageBlazorWasm"
+          BCL_PACKAGE_PATH="https://api.github.com/users/$OWNER/packages/nuget/$PACKAGE_NAME/versions"
+          echo "API Path: $BCL_PACKAGE_PATH"
+          VERSION_JSON=$(curl -s -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" $BCL_PACKAGE_PATH)
+          echo "$VERSION_JSON"
+          LATEST_VERSION=$(echo "$VERSION_JSON" | jq -r '.[0].name')
+          echo "latest-bcl-version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+          
+  update-gh-page:
+    needs: get-bcl-version
+    runs-on: ubuntu-latest
+    env:
+      BCL_VERSION: ${{ needs.get-bcl-version.outputs.bcl-version }}
+
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+          
+      - name: Replace local environment variable in nuget config because cant provide it as a parameter
+        run: |
+          sed -i "s|%LocalPackagePath%|$BCL_Source|g" nuget.config
+          sed -i "s|%GITHUB_USERNAME%|$GITHUB_USERNAME|g" nuget.config
+          sed -i "s|%GITHUB_PACKAGES_TOKEN%|$PACKAGES_TOKEN |g" nuget.config
+
+        
+      - name: debug values
+        run: |
+          echo "BCL_VERSION  $BCL_VERSION"
+        
+      # - name: Restore dependencies
+        # run: dotnet restore
+        
+        
+      # Add your tests here if needed
+      # - name: Test qqqqTODO
+      #   run: dotnet test --no-build --verbosity normal
+      
+      # - name: Set up Git authentication
+        # run: git config --global url."https://${PACKAGES_TOKEN}@github.com/".insteadOf "https://github.com/"
+      
+      #qqqq if this is needed then really we want to be using the project as built in other pipeline
+      # - name: Clean lock files
+        # run: |
+          # find . -name "packages.lock.json" -type f -exec rm -f {} \;
+      
+      # - name: Build SharedPages Using BlazorComponentLibraryPackage
+        # run: |
+          # dotnet build SharedPages -c Debug \
+            # /p:IsLocalDev=$IS_LOCAL_DEV \
+            # /p:BCLVersion=$BCL_VERSION \
+            # /p:UseBCLProjectReference=$USE_BCL_PROJECT_REFERENCE
+        
+      - name: Publish client using client release .csproj logic
+        run: |
+          dotnet publish ./TestHostPrerenderWASM/TestHostPrerenderWASM.Client/TestHostPrerenderWASM.Client.csproj --configuration Release \
+            /p:IsLocalDev=$IS_LOCAL_DEV \
+            /p:BCLVersion=$BCL_VERSION \
+            /p:UseBCLProjectReference=$USE_BCL_PROJECT_REFERENCE
+        
+        
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs  # The folder the action should deploy
+          branch: gh-pages  # The branch the action should deploy to

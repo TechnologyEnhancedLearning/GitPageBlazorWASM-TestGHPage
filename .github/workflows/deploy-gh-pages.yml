@@ -1,104 +1,62 @@
-name: Deploy to GitHub Pages
+name: Triggerable workflow using blazorwasm dev artifact
 
 on:
-  #push:
-  #  branches: [ master ] 
-  workflow_run:
-    workflows: ["Build BCL Package"] # Name of the workflow to trigger from.
-    types:
-      - completed
+  workflow_dispatch:
+    inputs:
+      artifact-url:
+        description: "dev version publish folder files"
+        required: true
+  
+  repository_dispatch:
+    types: [artifact_ready]
+
 
 permissions:
   contents: write
 env:
   
-  BCL_Source: "https://nuget.pkg.github.com/phil-nhs/index.json"
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   PACKAGES_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
   GITHUB_USERNAME: "Phil-NHS"
-  IS_LOCAL_DEV: false
-  USE_BCL_PROJECT_REFERENCE: false
+
   
 jobs:
 
-  get-bcl-version:
+  set-gh-page-to-most-recent-artifact:
     runs-on: ubuntu-latest
-    outputs:
-      bcl-version: ${{ steps.get-bcl-version-from-git-packages.outputs.latest-bcl-version }}
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-          
     
-      - name: Get BCL Version from Git Packages
-        id: get-bcl-version-from-git-packages
-        run: |
-          TOKEN="${{ secrets.GITHUB_TOKEN }}"
-          OWNER="Phil-NHS"
-          PACKAGE_NAME="TELBlazorComponentLibrary.GitPageBlazorWasm"
-          BCL_PACKAGE_PATH="https://api.github.com/users/$OWNER/packages/nuget/$PACKAGE_NAME/versions"
-          echo "API Path: $BCL_PACKAGE_PATH"
-          VERSION_JSON=$(curl -s -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" $BCL_PACKAGE_PATH)
-          echo "$VERSION_JSON"
-          LATEST_VERSION=$(echo "$VERSION_JSON" | jq -r '.[0].name')
-          echo "latest-bcl-version=$LATEST_VERSION" >> $GITHUB_OUTPUT
-          
-  update-gh-page:
-    needs: get-bcl-version
-    runs-on: ubuntu-latest
-    env:
-      BCL_VERSION: ${{ needs.get-bcl-version.outputs.bcl-version }}
+      - name: Print artifact URL (Manual Trigger)
+        if: github.event_name == 'workflow_dispatch'
+        run: echo "Artifact URL ${{ github.event.inputs.artifact-url }}"
 
-
-    steps:
+      - name: Print artifact URL (Repository Dispatch)
+        if: github.event_name == 'repository_dispatch'
+        run: echo "Artifact URL ${{ github.event.client_payload.artifact-url }}"
+    
       - name: Checkout repository
         uses: actions/checkout@v3
-      
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0.x'
+        
+      - name: Create docs directory
+        run: mkdir -p docs
+        
+      - name: Download artifact
+        env:
+          ARTIFACT_URL: ${{ github.event.client_payload.artifact-url || github.event.inputs.artifact-url }}
+        run: |
+          echo "Downloading artifact from $ARTIFACT_URL"
+          # Download the artifact using curl and extract it
           
-      - name: Replace local environment variable in nuget config because cant provide it as a parameter
-        run: |
-          sed -i "s|%LocalPackagePath%|$BCL_Source|g" nuget.config
-          sed -i "s|%GITHUB_USERNAME%|$GITHUB_USERNAME|g" nuget.config
-          sed -i "s|%GITHUB_PACKAGES_TOKEN%|$PACKAGES_TOKEN |g" nuget.config
-
-        
-      - name: debug values
-        run: |
-          echo "BCL_VERSION  $BCL_VERSION"
-        
-      # - name: Restore dependencies
-        # run: dotnet restore
-        
-        
-      # Add your tests here if needed
-      # - name: Test qqqqTODO
-      #   run: dotnet test --no-build --verbosity normal
-      
-      # - name: Set up Git authentication
-        # run: git config --global url."https://${PACKAGES_TOKEN}@github.com/".insteadOf "https://github.com/"
-      
-      #qqqq if this is needed then really we want to be using the project as built in other pipeline
-      # - name: Clean lock files
-        # run: |
-          # find . -name "packages.lock.json" -type f -exec rm -f {} \;
-      
-      # - name: Build SharedPages Using BlazorComponentLibraryPackage
-        # run: |
-          # dotnet build SharedPages -c Debug \
-            # /p:IsLocalDev=$IS_LOCAL_DEV \
-            # /p:BCLVersion=$BCL_VERSION \
-            # /p:UseBCLProjectReference=$USE_BCL_PROJECT_REFERENCE
-        
-      - name: Publish client using client release .csproj logic
-        run: |
-          dotnet publish ./TestHostPrerenderWASM/TestHostPrerenderWASM.Client/TestHostPrerenderWASM.Client.csproj --configuration Release \
-            /p:IsLocalDev=$IS_LOCAL_DEV \
-            /p:BCLVersion=$BCL_VERSION \
-            /p:UseBCLProjectReference=$USE_BCL_PROJECT_REFERENCE
+          curl -L -H "Authorization: Bearer ${{ secrets.PACKAGES_TOKEN }}" -o artifact.zip "$ARTIFACT_URL"
+          unzip artifact.zip -d artifact_contents
+          
+          # Move the extracted artifact to the docs directory
+          mv extracted_artifact/* docs/
+          # Remove the temporary directory
+          rm -rf extracted_artifact
+        working-directory: .
+  
         
         
       - name: Deploy to GitHub Pages

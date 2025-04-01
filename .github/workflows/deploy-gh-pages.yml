@@ -15,7 +15,7 @@ permissions:
   contents: write
 env:
   
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
   PACKAGES_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
   GITHUB_USERNAME: "Phil-NHS"
 
@@ -40,7 +40,8 @@ jobs:
         
       - name: Create docs directory
         run: mkdir -p docs
-        
+      
+      #curl -L -H "Authorization: Bearer ${{ secrets.PACKAGES_TOKEN }}" -o artifact.zip "$ARTIFACT_URL" 
       - name: Download artifact
         env:
           ARTIFACT_URL: ${{ github.event.client_payload.artifact-url || github.event.inputs.artifact-url }}
@@ -48,7 +49,8 @@ jobs:
           echo "Downloading artifact from $ARTIFACT_URL"
           # Download the artifact using curl and extract it
           
-          curl -L -H "Authorization: Bearer ${{ secrets.PACKAGES_TOKEN }}" -o artifact.zip "$ARTIFACT_URL"
+  
+          curl -L -H "Authorization: Bearer $GITHUB_TOKEN" -o artifact.zip "$ARTIFACT_URL/zip"
           unzip artifact.zip -d artifact_contents
           
           # Move the extracted artifact to the docs directory

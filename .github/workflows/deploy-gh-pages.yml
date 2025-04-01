@@ -61,12 +61,9 @@ jobs:
           
       - name: unzip and move artifact
         run: |  
-          unzip artifact.zip -d artifact_contents
+          unzip artifact.zip -d docs/
           
-          # Move the extracted artifact to the docs directory
-          mv extracted_artifact/* docs/
-          # Remove the temporary directory
-          rm -rf extracted_artifact
+
   
       - name: debug
         run: |

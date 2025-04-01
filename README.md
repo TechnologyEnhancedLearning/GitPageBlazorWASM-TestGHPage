@@ -12,3 +12,4 @@ Artifacts are automatic deleted after a period of time.
 [code repo for blazor wasm](https://github.com/TechnologyEnhancedLearning/GitPageBlazorWASM)
 https://technologyenhancedlearning.github.io/GitPageBlazorWASM/
 **TODO:** github page for main and this proj
+[Test Page](https://technologyenhancedlearning.github.io/GitPageBlazorWASM-TestGHPage/)

@@ -47,7 +47,7 @@ jobs:
         env:
           ARTIFACT_URL: ${{ github.event.client_payload.artifact-url || github.event.inputs.artifact-url }}
         run: |
-          echo "Downloading artifact from $FULL_ARTIFACT_URL"
+          echo "Downloading artifact from $ARTIFACT_URL"
           # Download the artifact using curl and extract it
          
           curl -L \

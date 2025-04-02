@@ -45,16 +45,16 @@ jobs:
       #https://api.github.com/repos/TechnologyEnhancedLearning/GitPageBlazorWASM/actions/artifacts/2859947943/zip -o artifact.zip
       - name: Download artifact
         env:
-          ARTIFACT_URL: ${{ github.event.client_payload.artifact-url || github.event.inputs.artifact-url }}
+          FULL_ARTIFACT_URL: "${{ github.event.client_payload.artifact-url || github.event.inputs.artifact-url }}/zip"
         run: |
-          echo "Downloading artifact from $ARTIFACT_URL"
+          echo "Downloading artifact from $FULL_ARTIFACT_URL"
           # Download the artifact using curl and extract it
          
           curl -L \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.PACKAGES_TOKEN }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            ${ARTIFACT_URL}/zip -o artifact.zip
+            "${FULL_ARTIFACT_URL}" -o artifact.zip
 
       - name: debug
         run: |

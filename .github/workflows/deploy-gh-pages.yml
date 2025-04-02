@@ -3,7 +3,7 @@ name: Triggerable workflow using blazorwasm dev artifact
 on:
   workflow_dispatch:
     inputs:
-      artifact-url:
+      artifact_url:
         description: "dev version publish folder files"
         required: true
   
@@ -29,11 +29,11 @@ jobs:
     
       - name: Print artifact URL (Manual Trigger)
         if: github.event_name == 'workflow_dispatch'
-        run: echo "Artifact URL ${{ github.event.inputs.artifact-url }}"
+        run: echo "Artifact URL ${{ github.event.inputs.artifact_url }}"
 
       - name: Print artifact URL (Repository Dispatch)
         if: github.event_name == 'repository_dispatch'
-        run: echo "Artifact URL ${{ github.event.client_payload.artifact-url }}"
+        run: echo "Artifact URL ${{ github.event.client_payload.artifact_url }}"
     
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -45,7 +45,7 @@ jobs:
       #https://api.github.com/repos/TechnologyEnhancedLearning/GitPageBlazorWASM/actions/artifacts/2859947943/zip -o artifact.zip
       - name: Download artifact
         env:
-          ARTIFACT_URL: ${{ github.event.client_payload.artifact-url || github.event.inputs.artifact-url }}
+          ARTIFACT_URL: ${{ github.event.client_payload.artifact_url || github.event.inputs.artifact_url }}
         run: |
           echo "Downloading artifact from $ARTIFACT_URL"
           # Download the artifact using curl and extract it

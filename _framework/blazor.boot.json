@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "TestHostPrerenderWASM.Client",
   "resources": {
-    "hash": "sha256-k0fk7IuN3a2VIx8XGlfjS0pLdjbBvdvzST1V3PifXkc=",
+    "hash": "sha256-5pzt+4S0elZJWA/4LLmPdnsCt9ACh8xBp5T3imn6380=",
     "jsModuleNative": {
       "dotnet.native.8.0.14.ao03vwswak.js": "sha256-DTUQS6Jc6BNnS7sYYezFfaUKVmQq0/lanhQuJfygH/k="
     },
@@ -31,12 +31,12 @@
       "Microsoft.Extensions.Primitives.wasm": "sha256-6187ynEahDlSLMBvD4vAmiLpZ3clRb5xu6rM7O8AxNo=",
       "Microsoft.JSInterop.wasm": "sha256-/pA0xbe9nQEq/Xpx8FBOhH2EumHGyM6CLoKKW8KXPLo=",
       "Microsoft.JSInterop.WebAssembly.wasm": "sha256-fd2zbkEmDMKwxoRxT9i0gm7xndmnlJJ2YhJ8QaAE1RU=",
-      "Package.BlazorComponentLibrary.wasm": "sha256-Ko2wFDdliFnzRNs+yBytbnSyVAz63NtqFKUsims++9M=",
-      "SharedPages.wasm": "sha256-e8zuKzDLJbNop7wW1SL2CzU8gG0spZQfrQDrIAWaFAo=",
+      "Package.BlazorComponentLibrary.wasm": "sha256-sVWtfQxvGpDrMSyHkDk559+nUaRwYXCSsdFK1/PTU0Y=",
+      "SharedPages.wasm": "sha256-wRF4UoRDv07TOK+qMBjfB7M/vmcrXgYNtPo2R6n6LB4=",
       "System.Collections.Concurrent.wasm": "sha256-lQjJxz4vSpnTizDGDcwWcbRH0iAQHxkhZbGwC5WsWjg=",
       "System.Collections.wasm": "sha256-Ei3pGO+nLMQQkXUcGjDtAp5sjecSYIeQ0HcmE9SQuVA=",
       "System.ComponentModel.wasm": "sha256-ROX86o93ocLpZP95tZWQdSE3L7Pr4c7PIsbxlyrGewo=",
-      "System.Console.wasm": "sha256-cTNueOTLD40RhrAWZDjiUZXWQ+i8XVoZ/RhImjrVt9A=",
+      "System.Console.wasm": "sha256-xIgQ2XfmLoA6qJwj5cmS9jyLZwL8HkUjwGbEv+DJZ4o=",
       "System.Linq.wasm": "sha256-2TLaMmGrnbpQmWNf9RjddkF9/eWqbttY8KvU7D1jEu4=",
       "System.Memory.wasm": "sha256-MSo8YI0x65dk+ks5hu0Kw4WWTD4jCSKn+VG2trDieGw=",
       "System.Net.Http.wasm": "sha256-fG35jUM7e7C7SlEfWoIXxbZExw1K7LlL+rG3iyss9Zc=",
@@ -48,12 +48,15 @@
       "System.Text.Encodings.Web.wasm": "sha256-FIbb3K0huaoQ8/5Ay0SNw+poPDV/Q8ReIfAb6Iy78rA=",
       "System.Text.Json.wasm": "sha256-UojkU5/w8gaiZnhu23q+F7plmALYHLweYZUNsJVCUs4=",
       "System.Text.RegularExpressions.wasm": "sha256-my0pPe0r+3rLOmImJ/k3cUD42bYB+zV2eHUnzu6N+Dg=",
-      "TestHostPrerenderWASM.Client.wasm": "sha256-pRWEqZu5nSPKUbFNbqlXQDXjAPem4G1DZeckmNiF+fg="
+      "TestHostPrerenderWASM.Client.wasm": "sha256-/yq/S1Qxhy46qUMIzEr+h3Ec9hCe3xsdgORam7ztRrU="
     }
   },
   "cacheBootResources": true,
   "debugLevel": 0,
   "linkerEnabled": true,
+  "appsettings": [
+    "../appsettings.json"
+  ],
   "globalizationMode": "sharded",
   "extensions": {
     "blazor": {}

@@ -1,1 +1,1 @@
-﻿9.2.5-feat-add-tel-frontend-package.1-250422-1454
+﻿9.2.7-fix-example-cicd.1-250423-1522
